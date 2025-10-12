@@ -1,4 +1,4 @@
-/* Marq 1.0.0 MIT
+/* Marq 1.0.1 MIT
    Minimal, dependency free marquee with clones, per breakpoint speed, hover pause, IO pause,
    fade in, vertical and horizontal modes, and a tiny public API. */
 
@@ -7,16 +7,19 @@
 
   // Public API container
   const Marq = {
-    version: "1.0.0",
+    version: "1.0.1",
     initAll,
     init,
-    // will be filled on auto init
     instances: []
   };
 
-  // Auto initialize on DOM ready unless <html marq-no-auto> is present
+  // Expose Marq globally right away
   if (typeof window !== "undefined") {
     window.Marq = window.Marq || Marq;
+  }
+
+  // Auto initialize on DOM ready unless <html marq-no-auto> is present
+  if (typeof window !== "undefined") {
     if (document.readyState === "loading") {
       document.addEventListener("DOMContentLoaded", tryAutoInit);
     } else {
@@ -27,8 +30,6 @@
   function tryAutoInit() {
     if (document.documentElement.hasAttribute("marq-no-auto")) return;
     window.Marq.instances = initAll();
-    // Optional log
-    // console.info("[Marq] Initialized", window.Marq.instances.length, "instance(s).");
   }
 
   // ===== Public entry points =====
@@ -58,7 +59,7 @@
     const fadeMs = toInt(attr(instanceEl, "marq-fade"), 0);
     const easeMs = toInt(attr(instanceEl, "marq-easeout"), 0);
     const bpRaw = attr(instanceEl, "marq-breakpoints", "");
-    const breakpoints = safeJSON(bpRaw) || { 1440: 80, 991: 100, 480: 120 };
+    const breakpoints = parseBreakpoints(bpRaw) || { 1440: 80, 991: 100, 480: 120 };
 
     // State
     let raf = 0;
@@ -346,6 +347,27 @@
     if (!s) return null;
     try { return JSON.parse(s); } catch { return null; }
   }
+  function parseBreakpoints(raw) {
+    if (!raw) return null;
+    // Accept single quoted JSON for Webflow attributes
+    const cleaned = raw.trim().startsWith("{") ? raw.replace(/'/g, '"') : raw;
+    try {
+      const obj = JSON.parse(cleaned);
+      return obj && typeof obj === "object" ? obj : null;
+    } catch {
+      // Try to be forgiving for common mistakes
+      try {
+        const fallback = cleaned
+          .replace(/(\w+)\s*:/g, '"$1":')  // wrap bare keys
+          .replace(/'/g, '"');             // single to double quotes
+        const obj = JSON.parse(fallback);
+        return obj && typeof obj === "object" ? obj : null;
+      } catch {
+        console.warn("Marq: invalid marq-breakpoints attribute:", raw);
+        return null;
+      }
+    }
+  }
   function parseCssLengthToPx(val, refEl) {
     const trimmed = String(val || "").trim();
     if (!trimmed) return 0;
@@ -374,7 +396,7 @@
       return { w, h };
     });
     return sizes.map(s => vertical ? s.h + gapPx : s.w + gapPx);
-    }
+  }
   async function waitImages(scope) {
     const imgs = qsa('img', scope).filter(img => img.src);
     await Promise.all(imgs.map(img => {
@@ -391,8 +413,18 @@
     }));
   }
 
-  // Expose Marq globally
-  if (typeof window !== "undefined") {
-    window.Marq = window.Marq || Marq;
+  // Smooth fade-in helper
+  function fadeIn(el, duration = 0) {
+    if (!el) return;
+    if (!duration || duration <= 0) {
+      el.style.opacity = "1";
+      return;
+    }
+    el.style.opacity = "0";
+    el.style.transition = `opacity ${duration / 1000}s linear`;
+    requestAnimationFrame(() => {
+      el.style.opacity = "1";
+    });
   }
+
 })();
