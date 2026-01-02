@@ -1,104 +1,31 @@
-SPRX Marquee
+Sprx Marquee
 
-A lightweight, attribute-driven marquee system using CSS animations and IntersectionObserver.
-No configuration needed beyond HTML data attributes.
+A lightweight, attribute driven marquee utility.
 
-Basic HTML Structure
-<div
-  data-sprx-marquee
-  data-speed="75"
-  data-direction="normal"
-  data-instances="2"
->
-  <div data-sprx-marquee-list>
-    <!-- marquee content -->
-  </div>
-</div>
+Features:
 
-Structure notes
+Zero manual CSS. Keyframes and base styles are injected automatically.
 
-data-sprx-marquee
-Root container for one marquee instance.
+Uses a total instance model. data-instances controls how many lists exist overall, including the original.
 
-data-sprx-marquee-list
-The scrolling content. This element is animated and cloned automatically.
+Speed is defined in pixels per second via data-speed.
 
-Multiple marquee instances on the same page are fully supported.
+Supports normal and reverse directions.
 
-Attribute Reference
-Marquee Container Attributes
-Attribute	Type	Default	Description
-data-sprx-marquee	boolean	required	Initializes a marquee instance. Applied to the container element.
-data-speed	number	75	Scroll speed in pixels per second. Higher values move faster.
-data-direction	string	normal	Scroll direction. Accepts normal or reverse.
-data-instances	number	2	Total number of marquee lists including the original. Controls seamless looping.
-Marquee List Attributes
-Attribute	Type	Default	Description
-data-sprx-marquee-list	boolean	required	Marks an element as a scrolling marquee list. This element is animated and cloned.
-Attribute Behavior Details
-data-speed
-<div data-sprx-marquee data-speed="100">
+Automatically pauses when the marquee leaves the viewport.
 
+Safe to run multiple times without duplicating CSS.
 
-Value represents pixels per second
+Attributes:
 
-Animation duration is calculated dynamically per list
+data-sprx-marquee marks the marquee container.
 
-Formula used internally:
+data-sprx-marquee-list marks the scrolling list.
 
-duration = list width ÷ pixels per second
+data-instances sets total list instances. Default is 2.
 
-data-direction
-<div data-sprx-marquee data-direction="reverse">
+data-speed sets pixels per second. Default is 75.
 
+data-direction accepts normal or reverse.
 
-Supported values:
-
-Value	Behavior
-normal	Scrolls left
-reverse	Scrolls right
-
-Direction is applied using CSS animation-direction.
-
-data-instances
-<div data-sprx-marquee data-instances="3">
-
-
-Controls how many total marquee lists exist.
-
-Value	Result
-1	Original list only
-2	1 cloned list
-3	2 cloned lists
-
-This ensures continuous scrolling even with short content.
-
-Visibility Behavior
-Feature	Description
-Auto pause	Animation pauses when the marquee leaves the viewport
-Auto resume	Animation resumes when the marquee re-enters the viewport
-Implementation	Uses IntersectionObserver
-Configuration	Always enabled, no attribute required
-Minimal Example
-<div
-  data-sprx-marquee
-  data-speed="90"
-  data-direction="reverse"
-  data-instances="2"
->
-  <div data-sprx-marquee-list>
-    <span>Logo A</span>
-    <span>Logo B</span>
-    <span>Logo C</span>
-  </div>
-</div>
-
-Notes
-
-CSS keyframes are injected automatically once per page
-
-Each marquee instance is calculated independently
-
-Works with flex, grid, or inline layouts
-
-No JavaScript configuration required
+This script is designed to be drop in, reusable across pages, and easy to extend.
