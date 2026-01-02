@@ -15,6 +15,13 @@
       [data-sprx-marquee-list] {
         animation: ${KEYFRAMES} linear infinite;
         will-change: transform;
+        transition: animation-play-state 0.4s ease;
+      }
+
+      /* Pause on hover (opt-in) */
+      [data-sprx-marquee][data-pausable="true"]:hover
+      [data-sprx-marquee-list] {
+        animation-play-state: paused !important;
       }
     `;
     document.head.appendChild(style);
@@ -66,16 +73,15 @@
       const pixelsPerSecond = getPixelsPerSecond(marquee);
       const direction = getAnimationDirection(marquee);
 
-      // Duplicate each existing list inside this marquee
+      // Duplicate lists
       const lists = marquee.querySelectorAll("[data-sprx-marquee-list]");
       lists.forEach((list) => {
-        const clonesToCreate = totalInstances - 1;
-        for (let i = 0; i < clonesToCreate; i++) {
+        for (let i = 0; i < totalInstances - 1; i++) {
           marquee.appendChild(list.cloneNode(true));
         }
       });
 
-      // Apply timing + direction to all (original + clones)
+      // Apply timing + direction
       marquee.querySelectorAll("[data-sprx-marquee-list]").forEach((list) => {
         setListTiming(list, pixelsPerSecond, direction);
       });
