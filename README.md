@@ -7,7 +7,7 @@ A lightweight, vanilla JavaScript marquee component that creates smooth scrollin
 Add the script via jsDelivr CDN:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/YOUR-USERNAME/REPO-NAME@VERSION/sprx-marquee.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/sparx-agency/sprx-marquee@latest/index.js"></script>
 ```
 
 ## Usage
